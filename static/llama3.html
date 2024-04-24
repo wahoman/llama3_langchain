@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF 기반 질문-답변 서비스</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #answer {
+            padding: 20px;
+            background-color: #dddddd;
+            margin: 15px 0;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>PDF 문서 기반 질문-답변 서비스</h1>
+    <p>질문을 입력하고 답변을 받으세요:</p>
+    <form id="questionForm">
+        <label for="question">질문:</label>
+        <textarea id="question" name="question" rows="4" required></textarea>
+        <button type="submit">질문하기</button>
+    </form>
+    <div id="answer">
+        <p>여기에 답변이 표시됩니다.</p>
+    </div>
+</div>
+
+<script>
+document.getElementById('questionForm').onsubmit = function(event) {
+    event.preventDefault();
+    const question = document.getElementById('question').value;
+    document.getElementById('answer').innerHTML = '<p>답변을 불러오는 중...</p>'; // 로딩 메시지 추가
+    fetch('/answer/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'question=' + encodeURIComponent(question)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('question').value = ''; // 입력 필드 초기화
+        document.getElementById('answer').innerHTML = '<p>' + data.answer + '</p>';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('answer').innerHTML = '<p>오류가 발생했습니다. 다시 시도해주세요.</p>'; // 오류 처리 메시지
+    });
+};
+
+</script>
+
+</body>
+</html>
